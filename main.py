@@ -11,7 +11,6 @@ CANVAS_HEIGHT = ROWS * CELL_SIZE
 
 DELAY = 0.2
 
-
 # BUILDINGS
 
 HOUSE = [
@@ -43,7 +42,6 @@ BUILDINGS = [
     BLOCK,
     SKYSCRAPER
 ]
-
 
 def draw_board(canvas):
     for row in range(ROWS):
@@ -136,6 +134,26 @@ def can_move_down(board, piece, piece_row, piece_col):
 
     return True
 
+def draw_ui(canvas, score):
+
+    canvas.create_text(
+        10,
+        15,
+        f"Score: {score}",
+        color="white"
+    )
+
+def is_spawn_blocked(board, piece, piece_col):
+
+    for row in range(len(piece)):
+        for col in range(len(piece[row])):
+
+            if piece[row][col] == 1:
+
+                if board[row][piece_col + col] == 1:
+                    return True
+
+    return False
 
 def main():
 
@@ -155,9 +173,25 @@ def main():
 
     piece_row = 0
     piece_col = 4
+    score = 0
+    game_over = False
 
     while True:
+        if game_over:
+            canvas.clear()
 
+            draw_board(canvas)
+
+            draw_board_cells(canvas, board)
+
+            canvas.create_text(
+                CANVAS_WIDTH // 2,
+                CANVAS_HEIGHT // 2,
+                "GAME OVER",
+                color="red"
+            )
+
+            break
         key = canvas.get_last_key_press()
 
         if (
@@ -177,7 +211,7 @@ def main():
         draw_board(canvas)
 
         draw_board_cells(canvas, board)
-
+        draw_ui(canvas, score)
         draw_piece(
             canvas,
             current_piece,
@@ -202,6 +236,8 @@ def main():
                 piece_col
             )
 
+            score += 10
+
             current_piece = random.choice(
                 BUILDINGS
             )
@@ -212,6 +248,13 @@ def main():
                 0,
                 COLS - len(current_piece[0])
             )
+
+            if is_spawn_blocked(
+                board,
+                current_piece,
+                piece_col
+            ):
+                game_over = True
 
         time.sleep(DELAY)
 
