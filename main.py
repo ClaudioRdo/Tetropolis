@@ -1,5 +1,6 @@
 from graphics import Canvas
 import time
+import random
 
 ROWS = 20
 COLS = 10
@@ -10,10 +11,39 @@ CANVAS_HEIGHT = ROWS * CELL_SIZE
 
 DELAY = 0.2
 
-O_PIECE = [
+
+# BUILDINGS
+
+HOUSE = [
+    [1]
+]
+
+TOWER = [
+    [1],
+    [1],
+    [1]
+]
+
+BLOCK = [
     [1, 1],
     [1, 1]
 ]
+
+SKYSCRAPER = [
+    [1],
+    [1],
+    [1],
+    [1],
+    [1]
+]
+
+BUILDINGS = [
+    HOUSE,
+    TOWER,
+    BLOCK,
+    SKYSCRAPER
+]
+
 
 def draw_board(canvas):
     for row in range(ROWS):
@@ -34,8 +64,8 @@ def draw_board(canvas):
                 "gray"
             )
 
-def draw_board_cells(canvas, board):
 
+def draw_board_cells(canvas, board):
     for row in range(ROWS):
         for col in range(COLS):
 
@@ -54,6 +84,7 @@ def draw_board_cells(canvas, board):
                     y2,
                     "cyan"
                 )
+
 
 def draw_piece(canvas, piece, start_row, start_col):
 
@@ -76,6 +107,7 @@ def draw_piece(canvas, piece, start_row, start_col):
                     "yellow"
                 )
 
+
 def place_piece(board, piece, piece_row, piece_col):
 
     for row in range(len(piece)):
@@ -85,7 +117,9 @@ def place_piece(board, piece, piece_row, piece_col):
 
                 board[piece_row + row][piece_col + col] = 1
 
+
 def can_move_down(board, piece, piece_row, piece_col):
+
     if piece_row >= ROWS - len(piece):
         return False
 
@@ -104,18 +138,40 @@ def can_move_down(board, piece, piece_row, piece_col):
 
 
 def main():
-    canvas = Canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
-    canvas.set_canvas_background_color("black")
 
-    piece_row = 0
-    piece_col = 4
+    canvas = Canvas(
+        CANVAS_WIDTH,
+        CANVAS_HEIGHT
+    )
+
+    canvas.set_canvas_background_color("black")
 
     board = []
 
     for row in range(ROWS):
         board.append([0] * COLS)
-        
+
+    current_piece = random.choice(BUILDINGS)
+
+    piece_row = 0
+    piece_col = 4
+
     while True:
+
+        key = canvas.get_last_key_press()
+
+        if (
+            key == "LEFT_ARROW"
+            and piece_col > 0
+        ):
+            piece_col -= 1
+
+        if (
+            key == "RIGHT_ARROW"
+            and piece_col < COLS - len(current_piece[0])
+        ):
+            piece_col += 1
+
         canvas.clear()
 
         draw_board(canvas)
@@ -124,30 +180,41 @@ def main():
 
         draw_piece(
             canvas,
-            O_PIECE,
+            current_piece,
             piece_row,
             piece_col
         )
 
         if can_move_down(
             board,
-            O_PIECE,
+            current_piece,
             piece_row,
             piece_col
-            ):
+        ):
             piece_row += 1
+
         else:
+
             place_piece(
                 board,
-                O_PIECE,
+                current_piece,
                 piece_row,
                 piece_col
             )
 
+            current_piece = random.choice(
+                BUILDINGS
+            )
+
             piece_row = 0
-            piece_col = 4
+
+            piece_col = random.randint(
+                0,
+                COLS - len(current_piece[0])
+            )
 
         time.sleep(DELAY)
+
 
 if __name__ == "__main__":
     main()
