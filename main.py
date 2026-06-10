@@ -85,6 +85,24 @@ def place_piece(board, piece, piece_row, piece_col):
 
                 board[piece_row + row][piece_col + col] = 1
 
+def can_move_down(board, piece, piece_row, piece_col):
+    if piece_row >= ROWS - len(piece):
+        return False
+
+    for row in range(len(piece)):
+        for col in range(len(piece[row])):
+
+            if piece[row][col] == 1:
+
+                next_row = piece_row + row + 1
+                next_col = piece_col + col
+
+                if board[next_row][next_col] == 1:
+                    return False
+
+    return True
+
+
 def main():
     canvas = Canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
     canvas.set_canvas_background_color("black")
@@ -111,9 +129,14 @@ def main():
             piece_col
         )
 
-        piece_row += 1
-
-        if piece_row >= ROWS - len(O_PIECE):
+        if can_move_down(
+            board,
+            O_PIECE,
+            piece_row,
+            piece_col
+            ):
+            piece_row += 1
+        else:
             place_piece(
                 board,
                 O_PIECE,
