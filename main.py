@@ -34,6 +34,27 @@ def draw_board(canvas):
                 "gray"
             )
 
+def draw_board_cells(canvas, board):
+
+    for row in range(ROWS):
+        for col in range(COLS):
+
+            if board[row][col] == 1:
+
+                x1 = col * CELL_SIZE
+                y1 = row * CELL_SIZE
+
+                x2 = x1 + CELL_SIZE
+                y2 = y1 + CELL_SIZE
+
+                canvas.create_rectangle(
+                    x1,
+                    y1,
+                    x2,
+                    y2,
+                    "cyan"
+                )
+
 def draw_piece(canvas, piece, start_row, start_col):
 
     for row in range(len(piece)):
@@ -55,6 +76,15 @@ def draw_piece(canvas, piece, start_row, start_col):
                     "yellow"
                 )
 
+def place_piece(board, piece, piece_row, piece_col):
+
+    for row in range(len(piece)):
+        for col in range(len(piece[row])):
+
+            if piece[row][col] == 1:
+
+                board[piece_row + row][piece_col + col] = 1
+
 def main():
     canvas = Canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
     canvas.set_canvas_background_color("black")
@@ -62,11 +92,17 @@ def main():
     piece_row = 0
     piece_col = 4
 
-    while True:
+    board = []
+
+    for row in range(ROWS):
+        board.append([0] * COLS)
         
+    while True:
         canvas.clear()
 
         draw_board(canvas)
+
+        draw_board_cells(canvas, board)
 
         draw_piece(
             canvas,
@@ -78,7 +114,15 @@ def main():
         piece_row += 1
 
         if piece_row >= ROWS - len(O_PIECE):
+            place_piece(
+                board,
+                O_PIECE,
+                piece_row,
+                piece_col
+            )
+
             piece_row = 0
+            piece_col = 4
 
         time.sleep(DELAY)
 
